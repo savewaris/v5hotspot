@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
+    "preinstall": "npm install --save-dev webpack-cli",
     "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
