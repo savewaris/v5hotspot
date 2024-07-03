@@ -5,5 +5,6 @@ services:
         value: 3000
       # Add other environment variables here like DB_USER, DB_PASSWORD, etc.
 
-buildCommand: npm install
-startCommand: node server.js
+buildCommand: npm install && npm run build
+startCommand: node src/server.js
+
