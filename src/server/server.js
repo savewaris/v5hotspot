@@ -8,11 +8,10 @@ const port = process.env.PORT || 5000;
 
 // PostgreSQL connection configuration using environment variables
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_DATABASE || 'hotspot_data',
-  password: process.env.DB_PASSWORD || 'Save_030945',
-  port: process.env.DB_PORT || 5432,
+  connectionString: process.env.DATABASE_URL, // Assuming you set DATABASE_URL for connection
+  ssl: {
+    rejectUnauthorized: false // For development, set to true for production with SSL certificates
+  }
 });
 
 // Middleware
@@ -39,7 +38,7 @@ app.get('/data', async (req, res) => {
     console.log('Data successfully sent.');
   } catch (err) {
     console.error('Error fetching data', err);
-    res.status(500).json({ error: 'Error fetching data' }); // Return a 500 status on error
+    res.status(500).json({ error: 'Error fetching data' });
   }
 });
 
