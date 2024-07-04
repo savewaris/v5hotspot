@@ -4,21 +4,30 @@ const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 
-
 const app = express();
 const port = process.env.PORT || 5000;
 
-// PostgreSQL connection configuration using environment variables
+// PostgreSQL connection configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false // Adjust for production with proper SSL certificates
-  }
+  ssl: process.env.USE_SSL === 'true' ? {
+    rejectUnauthorized: false
+  } : false
 });
 
 // Middleware
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'client', 'public')));
+
+// Test database connection
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('Error connecting to the database', err.stack);
+  } else {
+    console.log('Connected to the database');
+    release();
+  }
+});
 
 // Route to fetch paginated data
 app.get('/data', async (req, res) => {
@@ -27,20 +36,18 @@ app.get('/data', async (req, res) => {
 
   try {
     console.log('Fetching data from PostgreSQL...');
-    const client = await pool.connect();
     const query = `
       SELECT ST_AsGeoJSON(geometry) AS geometry, freq 
       FROM fire_frequency
       LIMIT $1 OFFSET $2
     `;
-    const result = await client.query(query, [limit, offset]);
-    client.release();
+    const result = await pool.query(query, [limit, offset]);
 
     res.json(result.rows);
     console.log('Data successfully sent.');
   } catch (err) {
     console.error('Error fetching data', err);
-    res.status(500).json({ error: 'Error fetching data' });
+    res.status(500).json({ error: 'Error fetching data', details: err.message });
   }
 });
 
