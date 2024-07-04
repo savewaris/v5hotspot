@@ -45,7 +45,7 @@ app.get('/data', async (req, res) => {
 
 // Serve index.html for root route
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname,'src', 'client', 'public', 'index.html'));
+  res.sendFile(path.join(__dirname,'..','client', 'public', 'index.html'));
 });
 
 // Start server
