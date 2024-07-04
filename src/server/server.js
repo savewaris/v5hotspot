@@ -4,7 +4,6 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
 const port = process.env.PORT || 5000;
 
 // PostgreSQL connection configuration
@@ -16,7 +15,8 @@ const pool = new Pool({
   port: 5432,
 });
 
-// Serve static files from the 'client' directory
+// Middleware
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'client', 'public')));
 
 // Route to fetch paginated data
@@ -41,6 +41,11 @@ app.get('/data', async (req, res) => {
     console.error('Error fetching data', err);
     res.status(500).json({ error: 'Error fetching data' });
   }
+});
+
+// Serve index.html for root route
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'public', 'index.html'));
 });
 
 // Start server

@@ -45,7 +45,9 @@
 
       const fetchData = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/data?limit=${limit}&offset=${offset}`);
+          const response = await axios.get('/data', {
+            params: { limit, offset }
+          });
           const data = response.data;
           console.log('Data retrieved:', data);
 
