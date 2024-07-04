@@ -6,7 +6,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// PostgreSQL connection configuration
+// PostgreSQL connection configuration using environment variables
 const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'localhost',
@@ -14,7 +14,6 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 'Save_030945',
   port: process.env.DB_PORT || 5432,
 });
-
 
 // Middleware
 app.use(cors());
@@ -46,7 +45,7 @@ app.get('/data', async (req, res) => {
 
 // Serve index.html for root route
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname,'..','client', 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'client', 'public', 'index.html'));
 });
 
 // Start server
