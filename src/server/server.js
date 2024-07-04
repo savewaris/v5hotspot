@@ -10,6 +10,7 @@ const port = process.env.PORT || 3000;
 // PostgreSQL connection configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  connectionTimeoutMillis: 5000, // 5 seconds timeout
   // Optional: Enable SSL verification by removing this line
   // ssl: { rejectUnauthorized: false }
 });
