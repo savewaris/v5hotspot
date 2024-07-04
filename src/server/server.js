@@ -17,7 +17,7 @@ const pool = new Pool({
 
 // Middleware
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'client', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'client', 'public')));
 
 // Route to fetch paginated data
 app.get('/data', async (req, res) => {
@@ -39,7 +39,7 @@ app.get('/data', async (req, res) => {
     console.log('Data successfully sent.');
   } catch (err) {
     console.error('Error fetching data', err);
-    res.status(500).json({ error: 'Error fetching data' });
+    res.status(500).json({ error: 'Error fetching data' }); // Return a 500 status on error
   }
 });
 
