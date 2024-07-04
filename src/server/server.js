@@ -33,7 +33,31 @@ const testDatabaseConnection = async () => {
   }
 };
 
-// Route to fetch paginated data
+// Fetch data from the database when the server starts
+const fetchDataOnStart = async () => {
+  const limit = 1000;
+  let offset = 0;
+
+  try {
+    console.log('Fetching data from PostgreSQL...');
+    const query = `
+      SELECT ST_AsGeoJSON(geometry) AS geometry, freq 
+      FROM fire_frequency
+      LIMIT $1 OFFSET $2
+    `;
+    const result = await pool.query(query, [limit, offset]);
+
+    // You can process the data here or store it in a variable
+    const data = result.rows;
+    console.log('Data successfully fetched:', data);
+    // You can store the fetched data in a global variable or process it as needed
+  } catch (err) {
+    console.error('Error fetching data:', err);
+    console.error('Error details:', err.stack);
+  }
+};
+
+// Route to fetch paginated data on-demand
 app.get('/data', async (req, res) => {
   const limit = parseInt(req.query.limit) || 1000;
   const offset = parseInt(req.query.offset) || 0;
@@ -66,6 +90,7 @@ app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
   console.log('Database URL:', process.env.DATABASE_URL);
   await testDatabaseConnection();
+  await fetchDataOnStart(); // Fetch data when the server starts
 });
 
 // Error handling for unhandled promise rejections
