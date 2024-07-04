@@ -9,12 +9,9 @@ const port = process.env.PORT || 3000;
 
 // PostgreSQL connection configuration
 const pool = new Pool({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_DATABASE,
-  ssl: process.env.USE_SSL === 'true' ? { rejectUnauthorized: false } : false
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.USE_SSL === 'true' ? { rejectUnauthorized: false } : false,
+  connectionTimeoutMillis: 5000, // 5 seconds
 });
 
 // Middleware
@@ -26,9 +23,12 @@ const testDatabaseConnection = async () => {
   try {
     const client = await pool.connect();
     console.log('Connected to the database');
+    const res = await client.query('SELECT NOW()');
+    console.log('Database time:', res.rows[0].now);
     client.release();
   } catch (err) {
-    console.error('Error connecting to the database:', err.message);
+    console.error('Error connecting to the database:', err);
+    console.error('Error details:', err.stack);
   }
 };
 
@@ -49,7 +49,8 @@ app.get('/data', async (req, res) => {
     res.json(result.rows);
     console.log('Data successfully sent.');
   } catch (err) {
-    console.error('Error fetching data:', err.message);
+    console.error('Error fetching data:', err);
+    console.error('Error details:', err.stack);
     res.status(500).json({ error: 'Error fetching data', details: err.message });
   }
 });
@@ -68,4 +69,9 @@ app.listen(port, async () => {
   console.log(`Database: ${process.env.DB_DATABASE}`);
   console.log(`User: ${process.env.DB_USER}`);
   await testDatabaseConnection();
+});
+
+// Error handling for unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
