@@ -10,8 +10,9 @@ const port = process.env.PORT || 3000;
 // PostgreSQL connection configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.USE_SSL === 'true' ? { rejectUnauthorized: false } : false,
-  connectionTimeoutMillis: 5000, // 5 seconds
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // Middleware
@@ -63,11 +64,7 @@ app.get('/', (req, res) => {
 // Start server
 app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
-  console.log('Database connection details:');
-  console.log(`Host: ${process.env.DB_HOST}`);
-  console.log(`Port: ${process.env.DB_PORT}`);
-  console.log(`Database: ${process.env.DB_DATABASE}`);
-  console.log(`User: ${process.env.DB_USER}`);
+  console.log('Database URL:', process.env.DATABASE_URL);
   await testDatabaseConnection();
 });
 

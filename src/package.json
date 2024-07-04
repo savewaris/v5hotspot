@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "npm run client & npm run server",
+    "start": "node server/server.js",
+    "dev": "npm run client & npm run server",
     "client": "webpack --config client/webpack.config.js",
     "server": "node --max-old-space-size=16384 server/server.js"
   },
