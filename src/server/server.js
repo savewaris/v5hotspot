@@ -8,9 +8,9 @@ const port = process.env.PORT || 5000;
 
 // PostgreSQL connection configuration using environment variables
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // Assuming you set DATABASE_URL for connection
+  connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // For development, set to true for production with SSL certificates
+    rejectUnauthorized: false // Adjust for production with proper SSL certificates
   }
 });
 
@@ -50,4 +50,5 @@ app.get('/', (req, res) => {
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  console.log(`DATABASE_URL: ${process.env.DATABASE_URL}`);
 });
