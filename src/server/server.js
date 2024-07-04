@@ -5,14 +5,16 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 // PostgreSQL connection configuration
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.USE_SSL === 'true' ? {
-    rejectUnauthorized: false
-  } : false
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_DATABASE,
+  ssl: process.env.USE_SSL === 'true' ? { rejectUnauthorized: false } : false
 });
 
 // Middleware
@@ -20,14 +22,15 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'client', 'public')));
 
 // Test database connection
-pool.connect((err, client, release) => {
-  if (err) {
-    console.error('Error connecting to the database', err.stack);
-  } else {
+const testDatabaseConnection = async () => {
+  try {
+    const client = await pool.connect();
     console.log('Connected to the database');
-    release();
+    client.release();
+  } catch (err) {
+    console.error('Error connecting to the database:', err.message);
   }
-});
+};
 
 // Route to fetch paginated data
 app.get('/data', async (req, res) => {
@@ -46,7 +49,7 @@ app.get('/data', async (req, res) => {
     res.json(result.rows);
     console.log('Data successfully sent.');
   } catch (err) {
-    console.error('Error fetching data', err);
+    console.error('Error fetching data:', err.message);
     res.status(500).json({ error: 'Error fetching data', details: err.message });
   }
 });
@@ -57,7 +60,12 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
-  console.log(`DATABASE_URL: ${process.env.DATABASE_URL}`);
+  console.log('Database connection details:');
+  console.log(`Host: ${process.env.DB_HOST}`);
+  console.log(`Port: ${process.env.DB_PORT}`);
+  console.log(`Database: ${process.env.DB_DATABASE}`);
+  console.log(`User: ${process.env.DB_USER}`);
+  await testDatabaseConnection();
 });

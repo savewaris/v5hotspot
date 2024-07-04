@@ -8,16 +8,26 @@
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet-src.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <style>
-    #map {
-      height: 100vh;
+    #map { height: 100vh; }
+    #error { 
+      position: absolute; 
+      top: 10px; 
+      left: 10px; 
+      z-index: 1000; 
+      background: white; 
+      padding: 10px; 
+      border-radius: 5px; 
+      display: none;
     }
   </style>
 </head>
 <body>
   <div id="map"></div>
+  <div id="error"></div>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       const map = L.map('map').setView([51.505, -0.09], 13);
+      const errorDiv = document.getElementById('error');
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
@@ -54,7 +64,7 @@
           data.forEach(item => {
             try {
               const geoJSON = JSON.parse(item.geometry);
-              geoJSON.properties = { freq: item.freq }; // Add freq to properties
+              geoJSON.properties = { freq: item.freq };
               console.log('Parsed GeoJSON:', geoJSON);
 
               L.geoJSON(geoJSON, {
@@ -74,7 +84,9 @@
             console.log('All data fetched');
           }
         } catch (error) {
-          console.error('Error fetching data', error);
+          console.error('Error fetching data:', error);
+          errorDiv.textContent = `Error fetching data: ${error.message}`;
+          errorDiv.style.display = 'block';
         }
       };
 
