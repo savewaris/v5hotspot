@@ -2,7 +2,8 @@
   "scripts": {
     "start": "concurrently \"npm run client\" \"node --max-old-space-size=16384 server/server.js\"",
     "client": "webpack --config client/webpack.config.js",
-    "server": "node --max-old-space-size=4096 server/server.js"
+    "server": "node --max-old-space-size=4096 server/server.js",
+    "build": "webpack --config client/webpack.config.js --mode production"
   },
   "dependencies": {
     "axios": "^1.7.2",
